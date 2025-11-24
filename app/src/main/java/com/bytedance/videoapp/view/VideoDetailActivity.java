@@ -1,7 +1,6 @@
 package com.bytedance.videoapp.view;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.View;
 import android.widget.VideoView;
 
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.bytedance.videoapp.R;
+import com.bytedance.videoapp.adapters.VideoPagerAdapter;
 import com.bytedance.videoapp.model.MockData;
 import com.bytedance.videoapp.model.VideoBean;
 
@@ -26,7 +26,7 @@ public class VideoDetailActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_video_detail);
 
-        // 目标视频
+        // 从intent获取目标视频位置
         int targetPosition = getIntent().getIntExtra("pos", 0);
 
         List<VideoBean> videoList = MockData.getVideoList();

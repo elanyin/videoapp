@@ -1,9 +1,8 @@
-package com.bytedance.videoapp.view;
+package com.bytedance.videoapp.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -32,7 +31,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         this.mListener = listener;
     }
 
-    // 简单方法，用来让 MainActivity 把假数据传进来
+    // 让 MainActivity 把假数据传进来
     public void setData(List<VideoBean> list) {
         this.mData = list;
         notifyDataSetChanged(); // 告诉列表数据变了
@@ -40,6 +39,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
 
     @NonNull
     @Override
+    // 创建子布局
     public VideoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         // 加载卡片布局 item_video_card
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_video_card, parent, false);
@@ -47,35 +47,39 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     }
 
     @Override
+    // 绑定数据
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
-        VideoBean bean = mData.get(position);
-        holder.tvTitle.setText(bean.title);
-        holder.tvAuthor.setText(bean.author);
-        holder.tvLike.setText(bean.likeCount);
+        VideoBean videoBean = mData.get(position);
+        holder.tvTitle.setText(videoBean.title);
+        holder.tvAuthor.setText(videoBean.author);
+        holder.tvLike.setText(videoBean.likeCount);
 
         Glide.with(holder.itemView.getContext())
-                .load(bean.coverResId)
+                .load(videoBean.coverResId)
                 .into(holder.ivCover);
 
         Glide.with(holder.itemView.getContext())
-                .load(bean.avatarResId)
+                .load(videoBean.avatarResId)
                 .circleCrop()
                 .into(holder.ivAvatar);
 
         holder.itemView.setOnClickListener(v -> {
             if (mListener != null) {
-                mListener.onItemClick(bean, holder.getAdapterPosition());
+                mListener.onItemClick(videoBean, holder.getAdapterPosition());
             }
         });
+
+
     }
 
     @Override
     public int getItemCount() {
-        return mData.size();
+        return mData != null ? mData.size() : 0;
     }
 
+    // viewHolder就写成内部类了
     static class VideoViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivCover, ivAvatar;
+        ImageView ivCover, ivAvatar, ivPlaceholder;
         TextView tvTitle, tvAuthor, tvLike;
 
         public VideoViewHolder(@NonNull View itemView) {
@@ -86,6 +90,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvAuthor = itemView.findViewById(R.id.tv_author);
             tvLike = itemView.findViewById(R.id.tv_like);
+            ivPlaceholder = itemView.findViewById(R.id.iv_placeholder);
         }
     }
 }

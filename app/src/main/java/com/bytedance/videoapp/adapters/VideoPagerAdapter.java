@@ -1,4 +1,4 @@
-package com.bytedance.videoapp.view;
+package com.bytedance.videoapp.adapters;
 
 import android.net.Uri;
 import android.view.LayoutInflater;
