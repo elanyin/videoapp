@@ -11,8 +11,8 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.bytedance.videoapp.R;
 import com.bytedance.videoapp.adapters.VideoPagerAdapter;
-import com.bytedance.videoapp.model.MockData;
 import com.bytedance.videoapp.model.VideoBean;
+import com.bytedance.videoapp.model.VideoRepository;
 
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class VideoDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video_detail);
 
         int targetPosition = getIntent().getIntExtra(EXTRA_POSITION, 0);
-        List<VideoBean> videoList = MockData.getVideoList();
+        List<VideoBean> videoList = VideoRepository.getVideoList();
 
         initViewPager(videoList, targetPosition);
     }

@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bytedance.videoapp.adapters.VideoAdapter;
-import com.bytedance.videoapp.model.MockData;
+import com.bytedance.videoapp.model.VideoRepository;
 import com.bytedance.videoapp.model.VideoBean;
 import com.bytedance.videoapp.view.VideoDetailActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
      * 加载视频数据
      */
     private void loadVideoData() {
-        List<VideoBean> videoList = MockData.getVideoList();
+        List<VideoBean> videoList = VideoRepository.getVideoList();
         adapter.setData(videoList);
     }
 

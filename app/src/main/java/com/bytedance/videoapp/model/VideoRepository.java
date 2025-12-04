@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.List;
 import com.bytedance.videoapp.R;
 
-public class MockData {
+public class VideoRepository {
 
     public static List<VideoBean> getVideoList() {
         List<VideoBean> videoList = new ArrayList<>();
