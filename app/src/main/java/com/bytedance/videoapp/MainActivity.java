@@ -7,13 +7,15 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.bytedance.videoapp.adapters.VideoAdapter;
-import com.bytedance.videoapp.model.VideoRepository;
+import com.bytedance.videoapp.repository.VideoRepository;
 import com.bytedance.videoapp.model.VideoBean;
 import com.bytedance.videoapp.view.VideoDetailActivity;
+import com.bytedance.videoapp.viewmodel.VideoViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
@@ -30,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private BottomNavigationView bottomNav;
 
+    private VideoViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         initRecyclerView();
         initTabLayout();
         initBottomNavigation();
-        loadVideoData();
+        initViewModel();
     }
 
     /**
@@ -72,7 +76,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         // 设置点击事件
-        adapter.setOnItemClickListener((video, position) -> navigateToVideoDetail(position));
+        adapter.setOnItemClickListener((video, position) -> {
+            Intent intent = new Intent(MainActivity.this, VideoDetailActivity.class);
+            intent.putExtra("pos", position);
+            startActivity(intent);
+        });
     }
 
     /**
@@ -128,14 +136,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 加载视频数据
-     */
-    private void loadVideoData() {
-        List<VideoBean> videoList = VideoRepository.getVideoList();
-        adapter.setData(videoList);
-    }
-
-    /**
      * 处理Tab选择
      */
     private void handleTabSelection(String tabText) {
@@ -179,4 +179,24 @@ public class MainActivity extends AppCompatActivity {
         groupHome.setVisibility(View.GONE);
         groupMe.setVisibility(View.VISIBLE);
     }
+
+    /**
+     * 初始化 ViewModel 并设置观察者
+     */
+    private void initViewModel() {
+        // 获取 ViewModel 实例
+        viewModel = new ViewModelProvider(this).get(VideoViewModel.class);
+
+        // 3. 观察数据变化
+        viewModel.videoList.observe(this, videoBeans -> {
+            // 当 ViewModel 里的数据获取成功并 postValue 时，这里会自动执行
+            if (videoBeans != null) {
+                adapter.setData(videoBeans);
+            }
+        });
+
+        // 4. 发起加载请求
+        viewModel.loadVideos();
+    }
+
 }
