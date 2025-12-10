@@ -12,7 +12,7 @@ import com.bytedance.videoapp.model.VideoBean;
 public class VideoRepository {
 
     // 模拟从服务器异步获取数据
-    public void fetchVideoList(DataCallback<List<VideoBean>> callback) {
+    public void fetchVideoList(int page, DataCallback<List<VideoBean>> callback) {
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             List<VideoBean> videoList = new ArrayList<>();
 

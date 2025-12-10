@@ -61,4 +61,7 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.1.0")
     // Paging3（如果想接入分页）
     implementation("androidx.paging:paging-runtime:3.2.0")
+
+    // 下拉刷新
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

@@ -69,7 +69,7 @@ public class VideoDetailActivity extends AppCompatActivity {
             }
         });
 
-        // 手动触发第一次
+        // 手动播放第一次
         viewPager.post(() -> {
             VideoBean vb = videoList.get(initialPosition);
             String uri = "android.resource://" + getPackageName() + "/" + vb.videoResId;

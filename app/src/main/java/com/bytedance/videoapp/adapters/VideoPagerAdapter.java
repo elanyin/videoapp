@@ -49,6 +49,7 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull VideoViewHolder holder, int position) {
         if (position < 0 || position >= mData.size()) return;
+
         VideoBean video = mData.get(position);
         holder.tvTitle.setText(video.title);
         holder.tvAuthor.setText("@" + video.author);
@@ -84,13 +85,12 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
     }
 
 
-
     // 把 player attach 到某个 holder
     public void attachPlayerToHolder(RecyclerView recyclerView, int position) {
         // 防止越界
         if (position < 0 || position >= getItemCount()) return;
 
-        // 1. 先解绑旧的 (如果存在)
+        // 1. 先解绑旧的
         if (attachedPosition != -1 && attachedPosition != position) {
             RecyclerView.ViewHolder old = recyclerView.findViewHolderForAdapterPosition(attachedPosition);
             if (old instanceof VideoViewHolder) {
@@ -108,13 +108,18 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
             // 绑定播放器
             holder.playerView.setPlayer(player);
 
-            // 【修复2】监听视频渲染，画面出来后再隐藏封面
+            // 监听视频渲染，画面出来后再隐藏封面
             player.addListener(new Player.Listener() {
                 @Override
                 public void onRenderedFirstFrame() {
                     // 只有当当前holder还是绑定的那个时，才隐藏封面
                     if (holder.getAdapterPosition() == attachedPosition) {
-                        holder.ivCover.setVisibility(View.GONE);
+                        // 渐隐动画
+                        holder.ivCover.animate()
+                                .alpha(0f)
+                                .setDuration(200)
+                                .withEndAction(() -> holder.ivCover.setVisibility(View.GONE))
+                                .start();
                     }
                     // 移除监听，防止内存泄漏和重复回调
                     player.removeListener(this);

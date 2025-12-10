@@ -6,10 +6,13 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.media3.common.util.UnstableApi;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.bytedance.videoapp.adapters.VideoAdapter;
 import com.bytedance.videoapp.repository.VideoRepository;
@@ -21,6 +24,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.List;
 
+@UnstableApi
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -31,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
     private View layoutMall;
     private TabLayout tabLayout;
     private BottomNavigationView bottomNav;
-
     private VideoViewModel viewModel;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +49,9 @@ public class MainActivity extends AppCompatActivity {
         initTabLayout();
         initBottomNavigation();
         initViewModel();
+        initRefreshLayout();
+        initScrollListener();
+        viewModel.refresh();
     }
 
     /**
@@ -79,7 +86,11 @@ public class MainActivity extends AppCompatActivity {
         adapter.setOnItemClickListener((video, position) -> {
             Intent intent = new Intent(MainActivity.this, VideoDetailActivity.class);
             intent.putExtra("pos", position);
+            // 传递封面图避免加载黑屏
+            intent.putExtra("cover_res_id", video.coverResId);
             startActivity(intent);
+            // 去掉 Activity 默认的切换动画
+            overridePendingTransition(0, 0);
         });
     }
 
@@ -199,4 +210,62 @@ public class MainActivity extends AppCompatActivity {
         viewModel.loadVideos();
     }
 
+
+    private void initRefreshLayout() {
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        // 设置下拉圈圈的颜色
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_red_light);
+
+        // 监听下拉动作
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            viewModel.refresh();
+        });
+
+        // 监听 ViewModel 的加载状态，控制圈圈消失
+        viewModel.isRefreshing.observe(this, isRefreshing -> {
+            swipeRefreshLayout.setRefreshing(isRefreshing);
+        });
+    }
+
+    private void initScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                // 向下滑动时才处理 (dy > 0)
+                if (dy > 0) {
+                    StaggeredGridLayoutManager layoutManager =
+                            (StaggeredGridLayoutManager) recyclerView.getLayoutManager();
+
+                    if (layoutManager == null) return;
+
+                    // 1. 获取瀑布流每一列最后可见 item 的位置
+                    int[] lastVisiblePositions = layoutManager.findLastVisibleItemPositions(null);
+
+                    // 2. 找到最大的那个位置（因为是瀑布流，底部可能参差不齐）
+                    int lastVisibleItemPosition = getLastVisibleItem(lastVisiblePositions);
+
+                    // 3. 获取总 Item 数量
+                    int totalItemCount = layoutManager.getItemCount();
+
+                    // 4. 触发加载阈值：如果还可以滚动的 item 少于 4 个，就开始预加载
+                    if (totalItemCount > 0 && lastVisibleItemPosition >= totalItemCount - 4) {
+                        viewModel.loadMore();
+                    }
+                }
+            }
+        });
+    }
+
+    // 辅助方法：获取数组中的最大值
+    private int getLastVisibleItem(int[] lastVisiblePositions) {
+        int max = 0;
+        for (int value : lastVisiblePositions) {
+            if (value > max) {
+                max = value;
+            }
+        }
+        return max;
+    }
 }
