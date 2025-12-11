@@ -63,8 +63,17 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
         // 点击暂停/播放
         holder.itemView.setOnClickListener(v -> {
             if (attachedPosition == position) {
-                if (player.isPlaying()) player.pause();
-                else player.play();
+                if (player.isPlaying()) {
+                    player.pause();
+                    holder.ivPlayIcon.setVisibility(View.VISIBLE);
+                    holder.ivPlayIcon.animate().scaleX(1f).scaleY(1f).setDuration(200).start();
+                }
+                else {
+                    player.play();
+                    holder.ivPlayIcon.animate().scaleX(0f).scaleY(0f).setDuration(200)
+                            .withEndAction(() -> holder.ivPlayIcon.setVisibility(View.GONE))
+                            .start();
+                }
             }
         });
     }
@@ -135,6 +144,7 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
         final ImageView ivCover;
         final TextView tvTitle;
         final TextView tvAuthor;
+        final ImageView ivPlayIcon;
 
         VideoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -142,6 +152,7 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
             ivCover = itemView.findViewById(R.id.iv_cover);
             tvTitle = itemView.findViewById(R.id.tv_title_full);
             tvAuthor = itemView.findViewById(R.id.tv_author);
+            ivPlayIcon = itemView.findViewById(R.id.iv_play_icon);
         }
     }
 }
