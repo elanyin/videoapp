@@ -5,6 +5,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.media3.common.Player;
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.ui.PlayerView;
-import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.bytedance.videoapp.player.PlayerManager;
@@ -60,6 +60,18 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
                 .load(video.coverResId)
                 .into(holder.ivCover);
 
+        // 设置头像
+        Glide.with(holder.itemView.getContext())
+                .load(video.avatarResId)
+                .circleCrop()
+                .into(holder.ivAvatar);
+
+        // 设置点赞数
+        holder.tvLikeCount.setText(video.likeCount);
+
+        // 设置评论数
+        holder.tvCommentCount.setText("289");
+
         // 点击暂停/播放
         holder.itemView.setOnClickListener(v -> {
             if (attachedPosition == position) {
@@ -75,6 +87,38 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
                             .start();
                 }
             }
+        });
+
+        // 点赞按钮点击变红效果（纯UI，不含双击逻辑）
+        holder.ivLike.setOnClickListener(v -> {
+            // 简单切换状态
+            v.setSelected(!v.isSelected());
+            if (v.isSelected()) {
+                ((ImageView)v).setImageResource(R.drawable.ic_heart_red);
+                // 简单动画
+                v.animate().scaleX(1.2f).scaleY(1.2f).setDuration(100).withEndAction(()->
+                        v.animate().scaleX(1f).scaleY(1f).start()
+                ).start();
+            } else {
+                ((ImageView)v).setImageResource(R.drawable.ic_heart_white);
+            }
+        });
+
+        // 头像点击事件
+        holder.ivAvatar.setOnClickListener(v -> {
+            // 这里可以加一个简单的缩放反馈动画
+            v.animate().scaleX(0.9f).scaleY(0.9f).setDuration(100).withEndAction(() -> {
+                v.animate().scaleX(1f).scaleY(1f).start();
+                // TODO: 跳转到 UserProfileActivity
+                Toast.makeText(v.getContext(), "点击了作者: " + video.author, Toast.LENGTH_SHORT).show();
+            }).start();
+        });
+
+        // 关注按钮逻辑（模拟）
+        // 点击后消失，表示已关注
+        holder.ivFollow.setOnClickListener(v -> {
+            v.animate().scaleX(0f).scaleY(0f).setDuration(200).start();
+            Toast.makeText(v.getContext(), "关注了作者: " + video.author, Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -145,6 +189,13 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
         final TextView tvTitle;
         final TextView tvAuthor;
         final ImageView ivPlayIcon;
+        final TextView tvLikeCount;
+        final TextView tvCommentCount;
+        final ImageView ivLike;
+        final ImageView ivComment;
+        final ImageView ivShare;
+        final ImageView ivFollow;
+        final ImageView ivAvatar;
 
         VideoViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -153,6 +204,13 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
             tvTitle = itemView.findViewById(R.id.tv_title_full);
             tvAuthor = itemView.findViewById(R.id.tv_author);
             ivPlayIcon = itemView.findViewById(R.id.iv_play_icon);
+            tvLikeCount = itemView.findViewById(R.id.tv_like_count);
+            tvCommentCount = itemView.findViewById(R.id.tv_comment_count);
+            ivLike = itemView.findViewById(R.id.iv_like);
+            ivComment = itemView.findViewById(R.id.iv_comment);
+            ivShare = itemView.findViewById(R.id.iv_share);
+            ivFollow = itemView.findViewById(R.id.iv_follow);
+            ivAvatar = itemView.findViewById(R.id.iv_avatar);
         }
     }
 }

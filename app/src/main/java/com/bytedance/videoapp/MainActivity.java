@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
     private void initRefreshLayout() {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         // 设置下拉圈圈的颜色
-        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_red_light);
+        swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_light);
 
         // 监听下拉动作
         swipeRefreshLayout.setOnRefreshListener(() -> {
