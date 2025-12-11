@@ -120,6 +120,23 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
             v.animate().scaleX(0f).scaleY(0f).setDuration(200).start();
             Toast.makeText(v.getContext(), "关注了作者: " + video.author, Toast.LENGTH_SHORT).show();
         });
+
+        // 点击评论
+        holder.ivComment.setOnClickListener(v -> {
+            if (commentListener != null) {
+                commentListener.onCommentClick(video);
+            }
+        });
+    }
+
+    // 定义点击评论接口
+    public interface OnCommentClickListener {
+        void onCommentClick(VideoBean video);
+    }
+
+    private OnCommentClickListener commentListener;
+    public void setOnCommentClickListener(OnCommentClickListener listener) {
+        this.commentListener = listener;
     }
 
     @Override

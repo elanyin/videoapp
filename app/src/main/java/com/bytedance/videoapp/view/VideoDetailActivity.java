@@ -45,6 +45,13 @@ public class VideoDetailActivity extends AppCompatActivity {
             // 当数据回来时，才设置 Adapter
             if (videoList != null && !videoList.isEmpty()) {
                 adapter = new VideoPagerAdapter(videoList, this);
+
+                // 评论区点击
+                adapter.setOnCommentClickListener(video -> {
+                    CommentBottomSheet bottomSheet = new CommentBottomSheet();
+                    bottomSheet.show(getSupportFragmentManager(), "comment_sheet");
+                });
+
                 viewPager.setAdapter(adapter);
                 viewPager.setCurrentItem(targetPosition, false);
 
@@ -54,6 +61,7 @@ public class VideoDetailActivity extends AppCompatActivity {
         });
 
         viewModel.loadVideos();
+
     }
 
     private void initPlayerLogic(List<VideoBean> videoList, int initialPosition) {
