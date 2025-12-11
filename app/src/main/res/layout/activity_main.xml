@@ -4,7 +4,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"> <LinearLayout
+    android:background="#FFFFFF">
+
+    <LinearLayout
     android:id="@+id/group_home"
     android:layout_width="match_parent"
     android:layout_height="0dp"
@@ -12,75 +14,76 @@
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toTopOf="@id/bottomNav">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        app:tabTextColor="#999999"
-        app:tabSelectedTextColor="#000000"
-        app:tabIndicatorColor="#000000"
-        app:tabMode="scrollable" />
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="#FFFFFF"
+            app:tabTextColor="#999999"
+            app:tabSelectedTextColor="#000000"
+            app:tabIndicatorColor="#000000"
+            app:tabMode="scrollable"
+            app:tabRippleColor="@android:color/transparent" />
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipeRefreshLayout"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipeRefreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingHorizontal="4dp"
-                android:clipToPadding="false" />
+                app:layout_constraintTop_toTopOf="parent">
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingHorizontal="4dp"
+                    android:clipToPadding="false" />
 
-        <LinearLayout
-            android:id="@+id/layout_mall"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="#FFFFFF">
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-            <TextView
-                android:id="@+id/tv_mall_text"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/layout_mall"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
                 android:gravity="center"
-                android:text="商城页面"
-                android:textColor="#000000"
-                android:textSize="20sp"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:background="#FFFFFF">
 
-        <LinearLayout
-            android:id="@+id/layout_follow"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:background="#FFFFFF">
+                <TextView
+                    android:id="@+id/tv_mall_text"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:text="商城页面"
+                    android:textColor="#000000"
+                    android:textSize="20sp"/>
+            </LinearLayout>
 
-            <TextView
-                android:id="@+id/tv_follow_text"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:id="@+id/layout_follow"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
                 android:gravity="center"
-                android:text="关注页面"
-                android:textColor="#000000"
-                android:textSize="20sp"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:background="#FFFFFF">
 
-    </FrameLayout>
-
-</LinearLayout>
+                <TextView
+                    android:id="@+id/tv_follow_text"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:gravity="center"
+                    android:text="关注页面"
+                    android:textColor="#000000"
+                    android:textSize="20sp"/>
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/group_me"
