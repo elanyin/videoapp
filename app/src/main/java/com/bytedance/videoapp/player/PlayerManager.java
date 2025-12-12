@@ -17,9 +17,9 @@ import java.io.File;
 @UnstableApi
 public class PlayerManager {
 
-    private static PlayerManager sInstance;
+    private static volatile PlayerManager sInstance;
 
-    private final ExoPlayer player;
+    private ExoPlayer player;
     private SimpleCache simpleCache;
     private CacheDataSource.Factory cacheDataSourceFactory;
 
@@ -28,29 +28,26 @@ public class PlayerManager {
     private PlayerManager(Context context) {
         appContext = context.getApplicationContext();
         initCache();
-
-        // 用缓存 DataSource 作为 MediaSourceFactory
-        player = new ExoPlayer.Builder(appContext)
-                .setMediaSourceFactory(new DefaultMediaSourceFactory(cacheDataSourceFactory))
-                .build();
     }
 
-    public static synchronized PlayerManager getInstance(Context context) {
+    public static PlayerManager getInstance(Context context) {
         if (sInstance == null) {
-            sInstance = new PlayerManager(context);
+            synchronized (PlayerManager.class) {
+                if (sInstance == null) {
+                    sInstance = new PlayerManager(context);
+                }
+            }
         }
         return sInstance;
     }
 
-    /**
-     * 初始化磁盘缓存（100MB）
-     */
     private void initCache() {
         try {
             File cacheDir = new File(appContext.getCacheDir(), "exo_cache");
             long cacheSize = 100L * 1024L * 1024L; // 100MB
 
             LeastRecentlyUsedCacheEvictor evictor = new LeastRecentlyUsedCacheEvictor(cacheSize);
+            // Reverting to the older, deprecated but more stable constructor.
             simpleCache = new SimpleCache(cacheDir, evictor);
 
             DefaultDataSource.Factory upstreamFactory =
@@ -69,23 +66,38 @@ public class PlayerManager {
         }
     }
 
-    public ExoPlayer getPlayer() {
+    public synchronized ExoPlayer getPlayer() {
+        if (player == null) {
+            DefaultMediaSourceFactory mediaSourceFactory = new DefaultMediaSourceFactory(
+                cacheDataSourceFactory != null ? cacheDataSourceFactory : new DefaultDataSource.Factory(appContext)
+            );
+            player = new ExoPlayer.Builder(appContext)
+                .setMediaSourceFactory(mediaSourceFactory)
+                .build();
+        }
         return player;
     }
 
-    /**
-     * 准备播放
-     */
     public void prepareMedia(String uri, boolean playWhenReady, long seekPositionMs) {
+        ExoPlayer currentPlayer = getPlayer();
         MediaItem mediaItem = MediaItem.fromUri(uri);
-        player.setMediaItem(mediaItem);
-        if (seekPositionMs > 0) player.seekTo(seekPositionMs);
-        player.setPlayWhenReady(playWhenReady);
-        player.prepare();
+        currentPlayer.setMediaItem(mediaItem);
+        if (seekPositionMs > 0) currentPlayer.seekTo(seekPositionMs);
+        currentPlayer.setPlayWhenReady(playWhenReady);
+        currentPlayer.prepare();
     }
 
-    public void release() {
-        player.release();
+    // Called from Activity's onDestroy
+    public void releasePlayer() {
+        if (player != null) {
+            player.release();
+            player = null;
+        }
+    }
+
+    // Can be called from Application's onTerminate to fully clean up.
+    public void shutdown() {
+        releasePlayer();
         if (simpleCache != null) {
             try {
                 simpleCache.release();

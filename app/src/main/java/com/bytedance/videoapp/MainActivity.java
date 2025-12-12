@@ -166,15 +166,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * 导航到视频详情页
-     */
-    private void navigateToVideoDetail(int position) {
-        Intent intent = new Intent(MainActivity.this, VideoDetailActivity.class);
-        intent.putExtra("pos", position);
-        startActivity(intent);
-    }
-
-    /**
      * 显示首页组
      */
     private void showHomeGroup() {

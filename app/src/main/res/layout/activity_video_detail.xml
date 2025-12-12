@@ -12,4 +12,17 @@
         android:layout_height="match_parent"
         android:orientation="vertical" />
 
+    <!-- 临时封面图，覆盖在 ViewPager2 之上，用于防止初始黑屏 -->
+    <ImageView
+        android:id="@+id/temp_cover"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        android:background="#000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
