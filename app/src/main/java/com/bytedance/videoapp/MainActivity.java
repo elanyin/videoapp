@@ -51,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
         initViewModel();
         initRefreshLayout();
         initScrollListener();
-        viewModel.refresh();
     }
 
     /**
@@ -206,8 +205,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // 4. 发起加载请求
-        viewModel.loadVideos();
+        // 监听追加数据，做增量插入避免位置跳动
+        viewModel.appendedVideos.observe(this, appended -> {
+            if (appended != null) {
+                adapter.appendData(appended);
+            }
+        });
+
+        // 4. 发起加载请求（仅首次）
+        viewModel.ensureFirstLoad();
     }
 
 

@@ -60,7 +60,7 @@ public class VideoDetailActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.loadVideos();
+        viewModel.loadAllCachedData();
 
     }
 
@@ -97,7 +97,7 @@ public class VideoDetailActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         // 页面销毁时停止播放，释放资源
-        PlayerManager.getInstance(this).getPlayer().stop();
+        PlayerManager.getInstance(this).release();
     }
 
 }

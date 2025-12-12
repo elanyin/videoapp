@@ -41,6 +41,7 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
     private final ExoPlayer player;
     // 记录当前 attach 的 position（视图可见且绑定了 player）
     private int attachedPosition = -1;
+    private Player.Listener renderListener;
 
     public VideoPagerAdapter(List<VideoBean> data, android.content.Context context) {
         if (data != null) this.mData = new ArrayList<>(data);
@@ -266,31 +267,33 @@ public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.Vi
 
             // 绑定播放器
             holder.playerView.setPlayer(player);
+            holder.ivCover.setAlpha(1f);
+            holder.ivCover.setVisibility(View.VISIBLE);
 
-            // 监听视频渲染，画面出来后再隐藏封面
-            player.addListener(new Player.Listener() {
+            // 确保仅保留一个渲染监听，避免快速滑动时重复添加
+            if (renderListener != null) {
+                player.removeListener(renderListener);
+            }
+            renderListener = new Player.Listener() {
                 @Override
                 public void onRenderedFirstFrame() {
-                    // 只有当当前holder还是绑定的那个时，才隐藏封面
                     if (holder.getAdapterPosition() == attachedPosition) {
-                        // 渐隐动画
                         holder.ivCover.animate()
                                 .alpha(0f)
                                 .setDuration(200)
                                 .withEndAction(() -> holder.ivCover.setVisibility(View.GONE))
                                 .start();
                     }
-                    // 移除监听，防止内存泄漏和重复回调
-                    player.removeListener(this);
                 }
-            });
+            };
+            player.addListener(renderListener);
 
             attachedPosition = position;
         }
     }
 
     /**
-     * 私有辅助方法：在指定位置动态添加并展示爱心动画
+     * 在指定位置动态添加并展示爱心动画
      */
     private void showLoveAnim(ViewGroup parentView, float x, float y) {
         Context context = parentView.getContext();

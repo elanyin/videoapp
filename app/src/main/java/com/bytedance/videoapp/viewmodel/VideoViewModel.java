@@ -1,7 +1,5 @@
 package com.bytedance.videoapp.viewmodel;
 
-import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -14,7 +12,7 @@ import java.util.List;
 
 public class VideoViewModel extends ViewModel {
 
-    // 1. 持有 Repository
+    // 1. 持有单例 Repository，跨 Activity 复用缓存
     private final VideoRepository repository;
 
     // 2. 定义可被观察的数据 (LiveData)
@@ -23,6 +21,10 @@ public class VideoViewModel extends ViewModel {
 
     // 暴露加载状态，用于控制 SwipeRefreshLayout 的旋转圈圈停止
     public final MutableLiveData<Boolean> isRefreshing = new MutableLiveData<>();
+
+    // 追加数据事件，用于列表增量插入
+    private final MutableLiveData<List<VideoBean>> _appendedVideos = new MutableLiveData<>();
+    public LiveData<List<VideoBean>> appendedVideos = _appendedVideos;
 
     // 暴露给 Activity 的是不可修改的 LiveData，保证数据安全
     public LiveData<List<VideoBean>> videoList = _videoList;
@@ -34,74 +36,91 @@ public class VideoViewModel extends ViewModel {
     private boolean isLoading = false; // 防止多次触发加载
 
     public VideoViewModel() {
-        repository = new VideoRepository();
+        repository = VideoRepository.getInstance();
     }
 
-    // 3. 业务逻辑：请求数据
-    public void loadVideos() {
-        Log.d("VideoViewModel", "请求数据");
-        repository.fetchVideoList(0, new VideoRepository.DataCallback<List<VideoBean>>() {
-            @Override
-            public void onSuccess(List<VideoBean> data) {
-                // 将数据 post 出去，Activity 会自动收到通知
-                _videoList.postValue(data);
-            }
-
-            @Override
-            public void onError(String msg) {
-
-            }
-        });
+    /**
+     * 只在首次进入时加载，已存在数据则直接回放到观察者
+     */
+    public void ensureFirstLoad() {
+        if (!currentData.isEmpty()) {
+            _videoList.setValue(new ArrayList<>(currentData));
+            return;
+        }
+        loadPage(0, true, false);
     }
 
-    // 1. 下拉刷新逻辑
+    public void loadAllCachedData() {
+        List<VideoBean> allData = repository.getAllCachedVideos();
+        if (!allData.isEmpty()) {
+            _videoList.setValue(allData);
+        } else {
+            // 如果实在没数据（比如直接打开详情页），才去加载第一页
+            refresh();
+        }
+    }
+
+    // 下拉刷新逻辑
     public void refresh() {
-        if (isLoading) return;
-        isLoading = true;
-        currentPage = 0; // 重置页码
-        isRefreshing.setValue(true); // 让 UI 显示加载圈
-
-        repository.fetchVideoList(0, new VideoRepository.DataCallback<List<VideoBean>>() {
-            @Override
-            public void onSuccess(List<VideoBean> data) {
-                currentData.clear(); // 清空老数据
-                currentData.addAll(data);
-                _videoList.setValue(currentData); // 通知 UI 更新
-
-                isRefreshing.setValue(false); // 隐藏加载圈
-                isLoading = false;
-            }
-
-            @Override
-            public void onError(String msg) {
-                isRefreshing.setValue(false);
-                isLoading = false;
-            }
-        });
+        loadPage(0, true, true);
     }
 
-    // 2. 上拉加载更多逻辑
+    // 上拉加载更多逻辑
     public void loadMore() {
         if (isLoading) return;
-        isLoading = true;
-        currentPage++; // 页码 +1
+        int nextPage = currentPage + 1;
+        loadPage(nextPage, false, false);
+    }
 
-        repository.fetchVideoList(currentPage, new VideoRepository.DataCallback<List<VideoBean>>() {
+
+    private void loadPage(int page, boolean clearOld, boolean showRefresh) {
+        if (isLoading) return;
+        isLoading = true;
+        if (showRefresh) {
+            isRefreshing.setValue(true);
+        }
+
+        repository.fetchVideoList(page, new VideoRepository.DataCallback<List<VideoBean>>() {
             @Override
             public void onSuccess(List<VideoBean> data) {
+                if (clearOld) {
+                    currentData.clear();
+                    currentPage = 0;
+                }
                 if (data != null && !data.isEmpty()) {
-                    currentData.addAll(data); // 追加新数据
-                    _videoList.setValue(currentData); // 通知 UI 更新
-                } else {
-                    // 没有更多数据了，可以给个提示
-                    currentPage--; // 还原页码
+                    if (page > currentPage && !clearOld) {
+                        currentPage = page;
+                    }
+                    currentData.addAll(data);
+                    if (clearOld) {
+                        _videoList.setValue(new ArrayList<>(currentData));
+                    } else {
+                        _appendedVideos.setValue(new ArrayList<>(data));
+                    }
+                } else if (!clearOld) {
+                    // 没有更多数据则回退页码
+                    if (page > 0) {
+                        currentPage = Math.max(0, page - 1);
+                    }
+                }
+
+                if (clearOld) {
+                    _videoList.setValue(new ArrayList<>(currentData));
+                }
+                if (showRefresh) {
+                    isRefreshing.setValue(false);
                 }
                 isLoading = false;
             }
 
             @Override
             public void onError(String msg) {
-                currentPage--; // 还原页码
+                if (showRefresh) {
+                    isRefreshing.setValue(false);
+                }
+                if (!clearOld && page > 0) {
+                    currentPage = Math.max(0, page - 1);
+                }
                 isLoading = false;
             }
         });

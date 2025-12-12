@@ -34,15 +34,26 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     }
 
     /**
-     * 设置数据列表
+     * 刷新全量数据
      */
     public void setData(List<VideoBean> list) {
-        if (list != null) {
-            this.mData = new ArrayList<>(list);
+        if (list == null) {
+            this.mData.clear();
         } else {
-            this.mData = new ArrayList<>();
+            this.mData.clear();
+            this.mData.addAll(list);
         }
         notifyDataSetChanged();
+    }
+
+    /**
+     * 追加数据，使用增量通知避免位置跳动
+     */
+    public void appendData(List<VideoBean> list) {
+        if (list == null || list.isEmpty()) return;
+        int start = mData.size();
+        mData.addAll(list);
+        notifyItemRangeInserted(start, list.size());
     }
 
     @NonNull
