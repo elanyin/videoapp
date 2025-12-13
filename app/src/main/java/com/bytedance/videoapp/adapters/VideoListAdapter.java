@@ -17,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 视频列表适配器
- * 负责展示视频卡片列表
+ * 视频列表adapter
+ * 首页的 RecyclerView, 负责展示视频瀑布流列表
  */
-public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder> {
+public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
     private List<VideoBean> mData = new ArrayList<>();
     private OnItemClickListener mListener;
@@ -47,7 +47,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     }
 
     /**
-     * 追加数据，使用增量通知避免位置跳动
+     * 追加数据，使用增量添加避免位置跳动
      */
     public void appendData(List<VideoBean> list) {
         if (list == null || list.isEmpty()) return;

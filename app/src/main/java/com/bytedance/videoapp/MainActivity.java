@@ -14,21 +14,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.bytedance.videoapp.adapters.VideoAdapter;
-import com.bytedance.videoapp.repository.VideoRepository;
-import com.bytedance.videoapp.model.VideoBean;
+import com.bytedance.videoapp.adapters.VideoListAdapter;
 import com.bytedance.videoapp.view.VideoDetailActivity;
 import com.bytedance.videoapp.viewmodel.VideoViewModel;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.List;
-
 @UnstableApi
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private VideoAdapter adapter;
+    private VideoListAdapter adapter;
     private View groupHome;
     private View groupMe;
     private View layoutFollow;
@@ -78,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         // 初始化Adapter
-        adapter = new VideoAdapter();
+        adapter = new VideoListAdapter();
         recyclerView.setAdapter(adapter);
 
         // 设置点击事件
@@ -208,6 +204,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * 初始化下拉刷新
+     */
     private void initRefreshLayout() {
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         // 设置下拉圈圈的颜色
@@ -224,6 +223,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    /**
+     * 初始化上拉加载
+     */
     private void initScrollListener() {
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -237,16 +240,16 @@ public class MainActivity extends AppCompatActivity {
 
                     if (layoutManager == null) return;
 
-                    // 1. 获取瀑布流每一列最后可见 item 的位置
+                    // 获取瀑布流每一列最后可见 item 的位置
                     int[] lastVisiblePositions = layoutManager.findLastVisibleItemPositions(null);
 
-                    // 2. 找到最大的那个位置（因为是瀑布流，底部可能参差不齐）
+                    // 找到最大的那个位置（因为是瀑布流，底部可能参差不齐）
                     int lastVisibleItemPosition = getLastVisibleItem(lastVisiblePositions);
 
-                    // 3. 获取总 Item 数量
+                    // 获取总 Item 数量
                     int totalItemCount = layoutManager.getItemCount();
 
-                    // 4. 触发加载阈值：如果还可以滚动的 item 少于 4 个，就开始预加载
+                    // 触发加载阈值：如果还可以滚动的 item 少于 4 个，就开始预加载
                     if (totalItemCount > 0 && lastVisibleItemPosition >= totalItemCount - 4) {
                         viewModel.loadMore();
                     }

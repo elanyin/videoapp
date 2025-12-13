@@ -19,13 +19,15 @@ import com.bytedance.videoapp.viewmodel.VideoViewModel;
 
 import java.util.List;
 
+/**
+ * 视频详情 Activity: 接收一个视频的信息，全屏播放，并处理滑动切换
+ */
 @UnstableApi
 public class VideoDetailActivity extends AppCompatActivity {
 
     private ViewPager2 viewPager;
     private VideoPagerAdapter adapter;
     private VideoViewModel viewModel;
-
     private ImageView tempCover;
     private boolean isTransitioned = false;
 
@@ -46,10 +48,9 @@ public class VideoDetailActivity extends AppCompatActivity {
         if (coverResId != 0) {
             tempCover.setImageResource(coverResId);
             tempCover.setVisibility(View.VISIBLE);
-            viewPager.setVisibility(View.VISIBLE); // Make it visible but transparent
+            viewPager.setVisibility(View.VISIBLE);
             viewPager.setAlpha(0f);
         } else {
-            // If there's no cover, just show the ViewPager directly
             isTransitioned = true;
         }
 
@@ -64,10 +65,8 @@ public class VideoDetailActivity extends AppCompatActivity {
                     bottomSheet.show(getSupportFragmentManager(), "comment_sheet");
                 });
 
-                // Set the listener for the first frame render event
                 adapter.setOnFirstFrameRenderedListener(() -> {
                     if (!isTransitioned) {
-                        // This is the reliable moment to start the transition
                         viewPager.animate().alpha(1f).setDuration(300).start();
                         tempCover.animate().alpha(0f).setDuration(300)
                                 .withEndAction(() -> tempCover.setVisibility(View.GONE)).start();

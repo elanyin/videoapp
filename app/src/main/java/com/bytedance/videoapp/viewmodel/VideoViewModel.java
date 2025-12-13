@@ -12,10 +12,10 @@ import java.util.List;
 
 public class VideoViewModel extends ViewModel {
 
-    // 1. 持有单例 Repository，跨 Activity 复用缓存
+    // 持有单例 Repository，跨 Activity 复用缓存
     private final VideoRepository repository;
 
-    // 2. 定义可被观察的数据 (LiveData)
+    // 定义可被观察的数据 (LiveData)
     // MutableLiveData 仅在 ViewModel 内部修改
     private final MutableLiveData<List<VideoBean>> _videoList = new MutableLiveData<>();
 

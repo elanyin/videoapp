@@ -33,6 +33,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * 视频分页adapter: 为详情页的 ViewPager2 提供数据和视图
+ */
 @UnstableApi
 public class VideoPagerAdapter extends RecyclerView.Adapter<VideoPagerAdapter.VideoViewHolder> {
 
