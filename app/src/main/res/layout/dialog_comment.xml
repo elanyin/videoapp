@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 评论区底部弹窗 (BottomSheet) 的布局 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_bottom_sheet">
+    android:background="@drawable/bg_bottom_sheet"> <!-- 使用带圆角的背景 -->
 
+    <!-- 顶部标题栏 -->
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"
@@ -16,6 +18,7 @@
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 右上角关闭按钮 -->
     <ImageView
         android:id="@+id/iv_close"
         android:layout_width="48dp"
@@ -26,12 +29,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 标题栏下方的分割线 -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="#EEEEEE"
         app:layout_constraintTop_toBottomOf="@id/tv_title"/>
 
+    <!-- 评论列表 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_comments"
         android:layout_width="match_parent"
@@ -39,6 +44,7 @@
         app:layout_constraintBottom_toTopOf="@+id/layout_input"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
+    <!-- 底部输入区域 -->
     <LinearLayout
         android:id="@+id/layout_input"
         android:layout_width="match_parent"
@@ -49,6 +55,7 @@
         android:padding="8dp"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <!-- 评论输入框 -->
         <EditText
             android:id="@+id/et_content"
             android:layout_width="0dp"
@@ -60,6 +67,7 @@
             android:paddingHorizontal="12dp"
             android:textSize="14sp" />
 
+        <!-- 发送按钮 -->
         <ImageView
             android:id="@+id/iv_send"
             android:layout_width="40dp"

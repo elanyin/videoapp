@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 应用主页面的根布局 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,14 +7,16 @@
     android:layout_height="match_parent"
     android:background="#FFFFFF">
 
+    <!-- "首页" Tab 对应的内容区域 -->
     <LinearLayout
-    android:id="@+id/group_home"
-    android:layout_width="match_parent"
-    android:layout_height="0dp"
-    android:orientation="vertical"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/bottomNav">
+        android:id="@+id/group_home"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav">
 
+        <!-- 顶部的 Tab 布局 (商城, 关注, 推荐) -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="wrap_content"
@@ -26,16 +29,19 @@
             app:tabMode="scrollable"
             app:tabRippleColor="@android:color/transparent" />
 
+        <!-- 内容区域容器，使用 FrameLayout 以便在不同 Tab 之间切换内容 -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <!-- 下拉刷新容器，包裹了推荐页的视频列表 -->
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/swipeRefreshLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <!-- “推荐”页的视频瀑布流列表 -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recyclerView"
                     android:layout_width="match_parent"
@@ -45,6 +51,7 @@
 
             </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+            <!-- "商城" 页面的占位布局 -->
             <LinearLayout
                 android:id="@+id/layout_mall"
                 android:layout_width="match_parent"
@@ -64,6 +71,7 @@
                     android:textSize="20sp"/>
             </LinearLayout>
 
+            <!-- "关注" 页面的占位布局 -->
             <LinearLayout
                 android:id="@+id/layout_follow"
                 android:layout_width="match_parent"
@@ -85,6 +93,7 @@
         </FrameLayout>
     </LinearLayout>
 
+    <!-- "我" Tab 对应的内容区域 -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/group_me"
         android:layout_width="match_parent"
@@ -94,6 +103,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/bottomNav">
 
+        <!-- 用户头像 -->
         <ImageView
             android:id="@+id/iv_me_avatar"
             android:layout_width="96dp"
@@ -104,6 +114,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- 用户昵称 -->
         <TextView
             android:id="@+id/tv_me_name"
             android:layout_width="wrap_content"
@@ -117,6 +128,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- 用户ID -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -130,6 +142,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- 底部导航栏 -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"

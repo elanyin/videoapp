@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 全屏视频播放页的 ViewHolder 布局 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root_view"
@@ -6,14 +7,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- ExoPlayer 的渲染视图，用于显示视频画面 -->
     <androidx.media3.ui.PlayerView
         android:id="@+id/player_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:use_controller="false"
-        app:resize_mode="fit" />
+        app:resize_mode="fit" />     <!-- 视频缩放模式：适应屏幕 -->
 
-    <!--  当视频还在缓冲时，用户看的是封面  -->
+    <!-- 视频封面图。在视频加载时显示，防止黑屏 -->
     <ImageView
         android:id="@+id/iv_cover"
         android:layout_width="match_parent"
@@ -24,18 +26,20 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
-    <!--  播放暂停图标  -->
+    <!-- 播放/暂停的居中图标。默认隐藏，在视频暂停时显示 -->
     <ImageView
         android:id="@+id/iv_play_icon"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:src="@android:drawable/ic_media_play"
         android:visibility="gone"
+        app:tint="#A0FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 右侧垂直排列的交互按钮栏 -->
     <LinearLayout
         android:id="@+id/layout_right_bar"
         android:layout_width="wrap_content"
@@ -47,6 +51,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
+        <!-- 作者头像 -->
         <FrameLayout
             android:layout_width="50dp"
             android:layout_height="50dp"
@@ -60,6 +65,7 @@
                 android:padding="1dp"
                 android:src="@mipmap/ic_launcher_round" />
 
+            <!-- “+”号关注按钮 -->
             <ImageView
                 android:id="@+id/iv_follow"
                 android:layout_width="20dp"
@@ -71,6 +77,7 @@
                 app:tint="#FFFFFF"/>
         </FrameLayout>
 
+        <!-- 点赞按钮 -->
         <ImageView
             android:id="@+id/iv_like"
             android:layout_width="40dp"
@@ -78,6 +85,7 @@
             android:src="@drawable/ic_heart_white"
             tools:tint="#FFFFFF" />
 
+        <!-- 点赞数 -->
         <TextView
             android:id="@+id/tv_like_count"
             android:layout_width="wrap_content"
@@ -91,6 +99,7 @@
             android:shadowDy="1"
             android:shadowRadius="2"/>
 
+        <!-- 评论按钮 -->
         <ImageView
             android:id="@+id/iv_comment"
             android:layout_width="38dp"
@@ -98,6 +107,7 @@
             android:src="@drawable/ic_comment_white"
             tools:tint="#FFFFFF" />
 
+        <!-- 评论数 -->
         <TextView
             android:id="@+id/tv_comment_count"
             android:layout_width="wrap_content"
@@ -111,6 +121,7 @@
             android:shadowDy="1"
             android:shadowRadius="2"/>
 
+        <!-- 分享按钮 -->
         <ImageView
             android:id="@+id/iv_share"
             android:layout_width="36dp"
@@ -118,6 +129,7 @@
             android:src="@drawable/ic_share_white"
             tools:tint="#FFFFFF" />
 
+        <!-- 分享文字 -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -131,6 +143,7 @@
 
     </LinearLayout>
 
+    <!-- 左下角的作者和标题信息区域 -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -142,6 +155,7 @@
         app:layout_constraintEnd_toStartOf="@id/layout_right_bar"
         app:layout_constraintStart_toStartOf="parent">
 
+        <!-- 作者名 -->
         <TextView
             android:id="@+id/tv_author"
             android:layout_width="wrap_content"
@@ -155,6 +169,7 @@
             android:shadowDy="1"
             android:shadowRadius="2"/>
 
+        <!-- 视频标题/文案 -->
         <TextView
             android:id="@+id/tv_title_full"
             android:layout_width="match_parent"

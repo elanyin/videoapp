@@ -17,42 +17,57 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 视频列表adapter
- * 首页的 RecyclerView, 负责展示视频瀑布流列表
+ * 首页视频列表的 RecyclerView 适配器。
+ * <p>
+ * 职责:
+ * 1.  为首页的 RecyclerView 提供视频卡片视图 (ViewHolder)。
+ * 2.  将视频数据 (VideoBean) 绑定到每个卡片视图上，包括封面、标题、作者等。
+ * 3.  管理数据列表，提供全量刷新 (setData) 和增量更新 (appendData) 的方法。
+ * 4.  处理列表项的点击事件，并通过回调接口通知外部 (Activity)。
  */
 public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.VideoViewHolder> {
 
     private List<VideoBean> mData = new ArrayList<>();
     private OnItemClickListener mListener;
 
+    /**
+     * 列表项点击事件的回调接口。
+     */
     public interface OnItemClickListener {
         void onItemClick(VideoBean video, int position);
     }
 
+    /**
+     * 设置点击事件的监听器。
+     * @param listener 监听器实例
+     */
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.mListener = listener;
     }
 
     /**
-     * 刷新全量数据
+     * 设置并刷新整个列表的数据。此方法会清空旧数据。
+     * @param list 新的视频数据列表
      */
     public void setData(List<VideoBean> list) {
-        if (list == null) {
-            this.mData.clear();
-        } else {
-            this.mData.clear();
-            this.mData.addAll(list);
+        mData.clear();
+        if (list != null) {
+            mData.addAll(list);
         }
+        // 使用 notifyDataSetChanged() 进行全量刷新。适用于初次加载或下拉刷新。
         notifyDataSetChanged();
     }
 
     /**
-     * 追加数据，使用增量添加避免位置跳动
+     * 在列表末尾追加数据。
+     * @param list 要追加的视频数据列表
      */
     public void appendData(List<VideoBean> list) {
         if (list == null || list.isEmpty()) return;
         int start = mData.size();
         mData.addAll(list);
+        // 使用 notifyItemRangeInserted() 进行增量更新，可以获得更好的性能和动画效果，
+        // 避免了列表的整体闪烁和位置跳动。适用于上拉加载更多。
         notifyItemRangeInserted(start, list.size());
     }
 
@@ -75,27 +90,28 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
             return;
         }
 
-        // 绑定文本数据
+        // --- 数据绑定 ---
         holder.tvTitle.setText(video.title != null ? video.title : "");
-        holder.tvAuthor.setText(video.author != null ? video.author : "");
+        holder.tvAuthor.setText(video.author != null ? "@" + video.author : "");
         holder.tvLike.setText(video.likeCount != null ? video.likeCount : "0");
 
-        // 加载封面图
+        // 使用 Glide 加载网络或本地图片资源
         Glide.with(holder.itemView.getContext())
                 .load(video.coverResId)
                 .into(holder.ivCover);
 
-        // 加载头像
         Glide.with(holder.itemView.getContext())
                 .load(video.avatarResId)
-                .circleCrop()
+                .circleCrop() // 应用圆形裁剪
                 .into(holder.ivAvatar);
 
-        // 设置点击事件
+        // --- 事件绑定 ---
         holder.itemView.setOnClickListener(v -> {
-            int adapterPosition = holder.getAdapterPosition();
+            // 使用 holder.getBindingAdapterPosition() 获取 item 在适配器中的最新位置，
+            // 这是一个更安全的选择，可以避免因数据变动导致的 ViewHolder 位置与数据不一致的问题。
+            int adapterPosition = holder.getBindingAdapterPosition();
             if (mListener != null && adapterPosition != RecyclerView.NO_POSITION) {
-                mListener.onItemClick(video, adapterPosition);
+                mListener.onItemClick(mData.get(adapterPosition), adapterPosition);
             }
         });
     }
@@ -106,7 +122,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<VideoListAdapter.Vide
     }
 
     /**
-     * ViewHolder类
+     * ViewHolder 定义，持有每个视频卡片的所有UI组件引用，以避免重复调用 findViewById。
      */
     static class VideoViewHolder extends RecyclerView.ViewHolder {
         final ImageView ivCover;

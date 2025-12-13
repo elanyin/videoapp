@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 视频详情页根布局 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,13 +7,24 @@
     android:layout_height="match_parent"
     android:background="#000000">
 
+    <!-- 用于实现上下滑动切换视频的核心组件 -->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical" />
 
-    <!-- 临时封面图，覆盖在 ViewPager2 之上，用于防止初始黑屏 -->
+    <!--
+        临时封面图，用于解决从首页跳转过来时的黑屏问题。
+
+        工作原理:
+        1.  该 ImageView 在布局层级上覆盖在 ViewPager2 之上。
+        2.  Activity 启动时，会立刻从 Intent 中获取封面图并设置给它，使其可见。
+            此时 ViewPager2 虽然也在加载，但被它覆盖着，用户看到的是封面图。
+        3.  当 ViewPager2 内的视频播放器准备好并渲染出第一帧画面时，
+            Activity 会收到回调，然后通过动画将这个临时封面图淡出，
+            同时将 ViewPager2 淡入，实现平滑过渡。
+    -->
     <ImageView
         android:id="@+id/temp_cover"
         android:layout_width="0dp"

@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 评论区 RecyclerView 的单个列表项布局 -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp">
 
+    <!-- 评论者头像 -->
     <ImageView
         android:id="@+id/iv_avatar"
         android:layout_width="36dp"
@@ -13,6 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 评论者昵称 -->
     <TextView
         android:id="@+id/tv_name"
         android:layout_width="wrap_content"
@@ -24,6 +27,7 @@
         app:layout_constraintStart_toEndOf="@id/iv_avatar"
         app:layout_constraintTop_toTopOf="@id/iv_avatar" />
 
+    <!-- 评论内容 -->
     <TextView
         android:id="@+id/tv_content"
         android:layout_width="0dp"
@@ -37,6 +41,7 @@
         app:layout_constraintStart_toStartOf="@id/tv_name"
         app:layout_constraintTop_toBottomOf="@id/tv_name" />
 
+    <!-- 评论发布日期/时间 -->
     <TextView
         android:id="@+id/tv_date"
         android:layout_width="wrap_content"
@@ -48,6 +53,7 @@
         app:layout_constraintStart_toStartOf="@id/tv_name"
         app:layout_constraintTop_toBottomOf="@id/tv_content" />
 
+    <!-- 右侧的点赞图标 -->
     <ImageView
         android:id="@+id/iv_like"
         android:layout_width="20dp"
@@ -57,6 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_name" />
 
+    <!-- 点赞数 -->
     <TextView
         android:id="@+id/tv_like_count"
         android:layout_width="wrap_content"
